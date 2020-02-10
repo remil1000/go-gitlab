@@ -84,6 +84,14 @@ func (s *ProjectVariablesService) ListVariables(pid interface{}, opt *ListProjec
 // GitLab API docs:
 // https://docs.gitlab.com/ee/api/project_level_variables.html#show-variable-details
 func (s *ProjectVariablesService) GetVariable(pid interface{}, key string, options ...OptionFunc) (*ProjectVariable, *Response, error) {
+	return s.GetVariableWithEnvironmentScope(pid, key, "", options...)
+}
+
+// GetVariableWithEnvironmentScope gets a variable in a given environmentScope.
+//
+// GitLab API docs:
+// https://docs.gitlab.com/ee/api/project_level_variables.html#show-variable-details
+func (s *ProjectVariablesService) GetVariableWithEnvironmentScope(pid interface{}, key string, environmentScope string, options ...OptionFunc) (*ProjectVariable, *Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
 		return nil, nil, err
@@ -93,6 +101,11 @@ func (s *ProjectVariablesService) GetVariable(pid interface{}, key string, optio
 	req, err := s.client.NewRequest("GET", u, nil, options)
 	if err != nil {
 		return nil, nil, err
+	}
+	if environmentScope != "" {
+		q := req.URL.Query()
+		q.Add("environment_scope", environmentScope)
+		req.URL.RawQuery = q.Encode()
 	}
 
 	v := new(ProjectVariable)
@@ -186,6 +199,14 @@ func (s *ProjectVariablesService) UpdateVariable(pid interface{}, key string, op
 // GitLab API docs:
 // https://docs.gitlab.com/ee/api/project_level_variables.html#remove-variable
 func (s *ProjectVariablesService) RemoveVariable(pid interface{}, key string, options ...OptionFunc) (*Response, error) {
+	return s.RemoveVariableWithEnvironmentScope(pid, key, "", options...)
+}
+
+// RemoveVariableWithEnvironmentScope removes a project's variable.
+//
+// GitLab API docs:
+// https://docs.gitlab.com/ee/api/project_level_variables.html#remove-variable
+func (s *ProjectVariablesService) RemoveVariableWithEnvironmentScope(pid interface{}, key string, environmentScope string, options ...OptionFunc) (*Response, error) {
 	project, err := parseID(pid)
 	if err != nil {
 		return nil, err
@@ -195,6 +216,11 @@ func (s *ProjectVariablesService) RemoveVariable(pid interface{}, key string, op
 	req, err := s.client.NewRequest("DELETE", u, nil, options)
 	if err != nil {
 		return nil, err
+	}
+	if environmentScope != "" {
+		q := req.URL.Query()
+		q.Add("environment_scope", environmentScope)
+		req.URL.RawQuery = q.Encode()
 	}
 
 	return s.client.Do(req, nil)
