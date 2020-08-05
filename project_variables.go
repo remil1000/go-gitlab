@@ -104,7 +104,7 @@ func (s *ProjectVariablesService) GetVariableWithEnvironmentScope(pid interface{
 	}
 	if environmentScope != "" {
 		q := req.URL.Query()
-		q.Add("environment_scope", environmentScope)
+		q.Add("filter[environment_scope]", environmentScope)
 		req.URL.RawQuery = q.Encode()
 	}
 
@@ -219,7 +219,7 @@ func (s *ProjectVariablesService) RemoveVariableWithEnvironmentScope(pid interfa
 	}
 	if environmentScope != "" {
 		q := req.URL.Query()
-		q.Add("environment_scope", environmentScope)
+		q.Add("filter[environment_scope]", environmentScope)
 		req.URL.RawQuery = q.Encode()
 	}
 
