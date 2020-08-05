@@ -185,6 +185,12 @@ func (s *ProjectVariablesService) UpdateVariable(pid interface{}, key string, op
 		return nil, nil, err
 	}
 
+	if *opt.EnvironmentScope != "" {
+		q := req.URL.Query()
+		q.Add("filter[environment_scope]", *opt.EnvironmentScope)
+		req.URL.RawQuery = q.Encode()
+	}
+
 	v := new(ProjectVariable)
 	resp, err := s.client.Do(req, v)
 	if err != nil {
